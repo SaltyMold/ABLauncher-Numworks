@@ -26,7 +26,6 @@ $(addprefix $(BUILD_DIR)/,$(addsuffix .o,$(basename $(1))))
 endef
 
 src = $(addprefix src/,\
-  libs/storage.c \
   main.c \
 )
 

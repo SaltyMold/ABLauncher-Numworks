@@ -1,1 +1,1 @@
-# A numworks launcher that let you switch between slots
+# A numworks launcher that let you switch between slot A and B
