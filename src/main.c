@@ -41,9 +41,11 @@ slot_t current_slot(void) {
 
 /*--------------------------------------------------------------*/
 
-#define MAX_BUFFER_NB_LINES 13
+#define MAX_BUFFER_NB_LINES 17
 #define MAX_SEGMENTS 8
 #define PADDING 14
+
+bool quit = false;
 
 typedef struct {
     const char *text;
@@ -65,10 +67,16 @@ typedef struct {
 line_buffer_t screen_buf[MAX_BUFFER_NB_LINES] = {0};
 
 void clear_buffer(void) {
-    eadk_display_push_rect_uniform(
-        (eadk_rect_t){0, 0, 320, MAX_BUFFER_NB_LINES * PADDING},
-        eadk_color_black
-    );
+    eadk_display_push_rect_uniform((eadk_rect_t){0, 0, 320, MAX_BUFFER_NB_LINES * PADDING}, eadk_color_black);
+}
+
+void sleep(int ms) {
+    for (int i = 0; i < ms / 10; i++) {
+        eadk_keyboard_state_t state = eadk_keyboard_scan();
+        if (eadk_keyboard_key_down(state, eadk_key_back)) quit = true;
+        eadk_timing_msleep(10);
+        if (quit) break;
+    }
 }
 
 void display_buffer(void) {
@@ -78,13 +86,7 @@ void display_buffer(void) {
         for (int j = 0; j < screen_buf[i].segment_count; j++) {
             text_segment_t *segment = &screen_buf[i].segments[j];
 
-            eadk_display_draw_string(
-                segment->text,
-                (eadk_point_t){x, i * PADDING},
-                false,
-                segment->color,
-                eadk_color_black
-            );
+            eadk_display_draw_string(segment->text, (eadk_point_t){x, i * PADDING}, false, segment->color, eadk_color_black);
 
             x += strlen(segment->text) * 7;
         }
@@ -99,7 +101,7 @@ void shift_screen_buf(void) {
     screen_buf[MAX_BUFFER_NB_LINES - 1] = (line_buffer_t){0};
 }
 
-#define FASTFETCH_NB_LINES 12
+#define FASTFETCH_NB_LINES 11
 
 line_buffer_t fastfetch_buf[FASTFETCH_NB_LINES] = {
     LINE(20, SEG("{Jz<          ^nC(  ", eadk_color_orange),   SEG("u0_a437", eadk_color_green),SEG("@", eadk_color_green),SEG("Numworks", eadk_color_white)),
@@ -111,14 +113,15 @@ line_buffer_t fastfetch_buf[FASTFETCH_NB_LINES] = {
     LINE(20, SEG("M@@-     [b@@c]#@*  ", eadk_color_orange),   SEG("RAM: ", eadk_color_green), SEG("128KB ", eadk_color_white)),
     LINE(20, SEG("M@@-       /M@#8@*  ", eadk_color_orange),   SEG("Screen: ", eadk_color_green), SEG("320x240, rgb565", eadk_color_white)),
     LINE(20, SEG("M@@-        ^n%@@W  ", eadk_color_orange),   SEG("Battery: ", eadk_color_green), SEG("1450 mAh", eadk_color_white)),
-    LINE(20, SEG("{Yj^          iuU1  ", eadk_color_orange),   SEG("Uptime: ", eadk_color_green), SEG("Flemme", eadk_color_white))
+    LINE(20, SEG("{Yj^          iuU1  ", eadk_color_orange),   SEG("Uptime: ", eadk_color_green), SEG("Flemme", eadk_color_white)),
+    LINE(20, SEG("\0", eadk_color_orange)),
 };
 
 line_buffer_t messages[15] = {
-    LINE(1000, SEG("> ", eadk_color_white),   SEG("Starting the launcher...", eadk_color_white)),
+    LINE(800, SEG("> ", eadk_color_white),   SEG("Starting the launcher...", eadk_color_white)),
     LINE(50, SEG("> ", eadk_color_white),   SEG("Launcher ready", eadk_color_green)),
-    LINE(1200, SEG("> ", eadk_color_white),   SEG("Slot A detected", eadk_color_white)),
-    LINE(1200, SEG("> ", eadk_color_white),   SEG("Slot B detected", eadk_color_white)),
+    LINE(800, SEG("> ", eadk_color_white),   SEG("Slot A detected", eadk_color_white)),
+    LINE(800, SEG("> ", eadk_color_white),   SEG("Slot B detected", eadk_color_white)),
     LINE(50, SEG("> ", eadk_color_white),   SEG("Press EXE to switch to slot A", eadk_color_yellow)),
     LINE(50, SEG("> ", eadk_color_white),   SEG("Press EXE to switch to slot B", eadk_color_yellow)),
     LINE(50, SEG("> ", eadk_color_white),   SEG("It will erase all of your data", eadk_color_red)),
@@ -133,11 +136,31 @@ void display_message(int index) {
         return;
     }
 
+    // Cherche une ligne vide
+    for (int i = 0; i < MAX_BUFFER_NB_LINES; i++) {
+        if (screen_buf[i].segment_count == 0) {
+            screen_buf[i] = messages[index];
+
+            clear_buffer();
+            display_buffer();
+
+            sleep(messages[index].wait_time);
+            return;
+        }
+    }
+
+    // Buffer plein : tout remonte d'une ligne
+    for (int i = 0; i < MAX_BUFFER_NB_LINES - 1; i++) {
+        screen_buf[i] = screen_buf[i + 1];
+    }
+
+    // Nouveau message en bas
     screen_buf[MAX_BUFFER_NB_LINES - 1] = messages[index];
+
     clear_buffer();
     display_buffer();
-    eadk_timing_msleep(messages[index].wait_time);
-    shift_screen_buf();
+
+    sleep(messages[index].wait_time);
 }
 
 int main(void) {
@@ -148,7 +171,7 @@ int main(void) {
     for (int i = 0; i < FASTFETCH_NB_LINES; i++) {
         screen_buf[i] = fastfetch_buf[i];
         display_buffer();
-        eadk_timing_msleep(fastfetch_buf[i].wait_time);
+        sleep(fastfetch_buf[i].wait_time);
     }
 
     display_message(0);
@@ -167,19 +190,20 @@ int main(void) {
 
     while (1){
         eadk_keyboard_state_t state = eadk_keyboard_scan();
-        if (eadk_keyboard_key_down(state, eadk_key_back)) break;
-
         if (eadk_keyboard_key_down(state, eadk_key_exe)) {
             if (slot == SLOT_A) {
                 display_message(8);
                 display_message(10);
+                if (quit) return 0;
                 jump(SLOT_B_TARGET);
                 while (1) {}
             } else if (slot == SLOT_B) {
                 display_message(8);
                 display_message(9);
+                if (quit) return 0;
                 system_reset();
             }
         }
+        if (eadk_keyboard_key_down(state, eadk_key_back)) break;
     }
 }
