@@ -1,5 +1,7 @@
 # A numworks launcher that let you switch between userland in slot A and B
 
+https://github.com/user-attachments/assets/ca0fedec-e78b-4b76-bc48-4b52275f2a6a
+
 ## Install the app
 
 To install this app, you'll need to:
