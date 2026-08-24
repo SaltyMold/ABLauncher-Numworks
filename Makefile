@@ -26,6 +26,8 @@ $(addprefix $(BUILD_DIR)/,$(addsuffix .o,$(basename $(1))))
 endef
 
 src = $(addprefix src/,\
+  display.c \
+  functions.c \
   main.c \
 )
 
