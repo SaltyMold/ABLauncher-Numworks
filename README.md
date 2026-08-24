@@ -16,11 +16,39 @@ To install this app, you'll need to:
 | EXE  | Switch userland slot      |
 | Back  | Quit      |
 
+## Docs
+
+The app works by changing the stack pointer and jumping to the correct address:
+```
+"ldrd r3, r2, [r0] \n"  // r3 = stack pointer, r2 = start address
+"msr  MSP, r3      \n"  // set stack pointer
+"bx   r2           \n"  // jump to start address
+```
+Slot B:
+```
+// 0x90400000 : start of slot B
+// 0x10000    : userland header size
+// 0x30       : slot info size
+// 0x90410030 : target address
+```
+Slot A:
+```
+// 0x90000000 : start of slot A
+// 0x20000    : userland headersize
+// 0x30       : slot info size
+// 0x90020030 : target address
+```
+It detects the slot your on:
+```
+unsigned long here = (unsigned long)&current_slot;
+
+if (here >= SLOT_A_START && here < SLOT_A_START + SLOT_SIZE) return SLOT_A;
+if (here >= SLOT_B_START && here < SLOT_B_START + SLOT_SIZE) return SLOT_B;
+```
+
+See more at: https://nwagyu.org/reference/firmware/slots.html
+
 ## Build the app
 
 I made tutorials here :
 - [C-App-Guide-for-Numworks](https://github.com/SaltyMold/C-App-Guide-for-Numworks)
-
-## Docs
-
-https://nwagyu.org/reference/firmware/slots.html
