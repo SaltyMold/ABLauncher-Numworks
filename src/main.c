@@ -6,8 +6,21 @@ const char eadk_app_name[] __attribute__((section(".rodata.eadk_app_name"))) = "
 const uint32_t eadk_api_level __attribute__((section(".rodata.eadk_api_level"))) = 0;
 
 int main(void) {
-    bool quit = false;
     slot_t slot = current_slot();
+
+    // Instant jump if shift is pressed at the start (i am tired of waiting)
+    eadk_keyboard_state_t state = eadk_keyboard_scan();
+    if (eadk_keyboard_key_down(state, eadk_key_shift)) {
+        if (slot == SLOT_A) {
+            jump(SLOT_B_TARGET);
+            while (1) {}
+        } else if (slot == SLOT_B) {
+            jump(SLOT_A_TARGET);
+            while (1) {}
+        }
+    }
+
+    bool quit = false;
     
     eadk_display_push_rect_uniform(eadk_screen_rect, eadk_color_black);
     line_buffer_t *screen_buffer = calloc(SCREEN_NB_LINES, sizeof(line_buffer_t));
@@ -35,7 +48,7 @@ int main(void) {
     if (quit) return 0;
     
     while (1) {
-        eadk_keyboard_state_t state = eadk_keyboard_scan();
+        state = eadk_keyboard_scan();
         
         if (eadk_keyboard_key_down(state, eadk_key_exe)) {
             print_message(screen_buffer, &idx, 19, &quit);
