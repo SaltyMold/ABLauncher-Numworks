@@ -16,6 +16,9 @@ To install this app, you'll need to:
 | EXE  | Switch userland slot      |
 | Back  | Quit      |
 
+> [!CAUTION]
+> After going back from userland B to A, it will crash by pressing HOME, just so you know ;)
+
 ## Docs
 
 The app works by changing the stack pointer and jumping to the correct address:
