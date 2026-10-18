@@ -16,7 +16,7 @@ EPSILON_LIBS = sim/libs/eadk.a sim/libs/ion.a sim/libs/sdl.a sim/libs/kandinsky.
 define object_for_dir
 $(addprefix $(1)/,$(addsuffix .o,$(basename $(2))))
 endef
-NWLINK = npm_config_loglevel=silent npx --yes --quiet -- nwlink@0.0.19
+NWLINK = npm_config_loglevel=silent npx --yes --quiet -- nwlink@1.0.0
 LINK_GC = 1
 LTO = 1
 EXTERNAL_DATA ?= assets/input.bin

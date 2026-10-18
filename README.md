@@ -30,23 +30,28 @@ The app works by changing the stack pointer and jumping to the correct address:
 Slot B:
 ```
 // 0x90400000 : start of slot B
-// 0x10000    : userland header size
-// 0x30       : slot info size
-// 0x90410030 : target address
+// 0x00020000 : userland header size
+// 0x00000030 : slot info size
+// 0x90420030 : target address
 ```
 Slot A:
 ```
 // 0x90000000 : start of slot A
-// 0x20000    : userland headersize
-// 0x30       : slot info size
+// 0x00020000 : userland header size
+// 0x00000030 : slot info size
 // 0x90020030 : target address
 ```
 It detects the slot your on:
 ```
-unsigned long here = (unsigned long)&current_slot;
+slot_t current_slot(void) {
+    unsigned long here = (unsigned long)&current_slot;
 
-if (here >= SLOT_A_START && here < SLOT_A_START + SLOT_SIZE) return SLOT_A;
-if (here >= SLOT_B_START && here < SLOT_B_START + SLOT_SIZE) return SLOT_B;
+    if (here >= SLOT_A_START && here < SLOT_A_START + SLOT_SIZE) return SLOT_A;
+    if (here >= SLOT_B_START && here < SLOT_B_START + SLOT_SIZE) return SLOT_B;
+
+    return SLOT_UNKNOWN;
+}
+
 ```
 
 See more at: https://nwagyu.org/reference/firmware/slots.html

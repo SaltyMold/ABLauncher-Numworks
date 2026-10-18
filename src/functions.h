@@ -10,7 +10,7 @@
 // 0x30       : slot info size
 // 0x90410030 : target address
 #define SLOT_B_START       0x90400000UL
-#define SLOT_B_HEADER_SIZE 0x10000UL
+#define SLOT_B_HEADER_SIZE 0x20000UL
 #define SLOT_B_INFO_SIZE   0x30UL
 #define SLOT_B_TARGET SLOT_B_START + SLOT_B_HEADER_SIZE + SLOT_B_INFO_SIZE
 
