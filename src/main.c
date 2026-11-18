@@ -12,7 +12,16 @@ int main(void) {
     eadk_keyboard_state_t state = eadk_keyboard_scan();
     if (eadk_keyboard_key_down(state, eadk_key_shift)) {
         if (slot == SLOT_A) {
-            jump(SLOT_B_TARGET);
+            jump(SLOT_B_TARGET_1);
+            while (1) {}
+        } else if (slot == SLOT_B) {
+            jump(SLOT_A_TARGET);
+            while (1) {}
+        }
+    }
+    if (eadk_keyboard_key_down(state, eadk_key_alpha)) {
+        if (slot == SLOT_A) {
+            jump(SLOT_B_TARGET_2);
             while (1) {}
         } else if (slot == SLOT_B) {
             jump(SLOT_A_TARGET);
@@ -27,6 +36,7 @@ int main(void) {
     if (screen_buffer == NULL) return 1;
     
     int idx = 0;
+    unsigned long target_b;
     
     for (int i = 0; i < NB_MESSAGES_FASTFETCH + 2; i++) {
         print_message(screen_buffer, &idx, i, &quit);
@@ -35,6 +45,25 @@ int main(void) {
     
     if (slot == SLOT_A) {
         print_message(screen_buffer, &idx, 13, &quit);
+
+        print_message(screen_buffer, &idx, 22, &quit);
+        while (!quit) {
+            state = eadk_keyboard_scan();
+            if (eadk_keyboard_key_down(state, eadk_key_one)) {
+                target_b = SLOT_B_TARGET_1;
+                print_message(screen_buffer, &idx, 23, &quit);
+                break;
+            }
+            if (eadk_keyboard_key_down(state, eadk_key_two)) {
+                target_b = SLOT_B_TARGET_2;
+                print_message(screen_buffer, &idx, 24, &quit);
+                break;
+            }
+            if (eadk_keyboard_key_down(state, eadk_key_back)) quit = true;
+            eadk_timing_msleep(10);
+        }
+        if (quit) return 0;
+
         print_message(screen_buffer, &idx, 14, &quit);
     } else if (slot == SLOT_B) {
         print_message(screen_buffer, &idx, 15, &quit);
@@ -57,7 +86,7 @@ int main(void) {
                 print_message(screen_buffer, &idx, 20, &quit);
                 free(screen_buffer);
                 if (quit) return 0;
-                jump(SLOT_B_TARGET);
+                jump(target_b);
                 while (1) {}
             } else if (slot == SLOT_B) {
                 print_message(screen_buffer, &idx, 21, &quit);

@@ -6,13 +6,17 @@
 // Check https://nwagyu.org/reference/firmware/addresses-structures.html
 
 // 0x90400000 : start of slot B
-// 0x10000    : userland header size
+// 0x10000    : userland header size 1
+// 0x20000    : userland header size 2
 // 0x30       : slot info size
-// 0x90410030 : target address
+// 0x90410030 : target address 1
+// 0x90420030 : target address 2
 #define SLOT_B_START       0x90400000UL
-#define SLOT_B_HEADER_SIZE 0x20000UL
+#define SLOT_B_HEADER_SIZE_1 0x10000UL
+#define SLOT_B_HEADER_SIZE_2 0x20000UL
 #define SLOT_B_INFO_SIZE   0x30UL
-#define SLOT_B_TARGET SLOT_B_START + SLOT_B_HEADER_SIZE + SLOT_B_INFO_SIZE
+#define SLOT_B_TARGET_1 SLOT_B_START + SLOT_B_HEADER_SIZE_1 + SLOT_B_INFO_SIZE
+#define SLOT_B_TARGET_2 SLOT_B_START + SLOT_B_HEADER_SIZE_2 + SLOT_B_INFO_SIZE
 
 // 0x90000000 : start of slot A
 // 0x20000    : userland headersize

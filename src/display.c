@@ -18,18 +18,22 @@ const line_buffer_t messages[NB_MESSAGES] = {
     LINE(50, SEG("> ", eadk_color_white),   SEG("Launcher ready", eadk_color_green)),
     
     LINE(800, SEG("> ", eadk_color_white),   SEG("Slot A detected", eadk_color_green)),
-    LINE(50, SEG("> ", eadk_color_white),   SEG("Press EXE to switch to slot B", eadk_color_yellow)),
+    LINE(50, SEG("> ", eadk_color_white),   SEG("Press EXE to jump to slot B", eadk_color_yellow)),
 
     LINE(800, SEG("> ", eadk_color_white),   SEG("Slot B detected", eadk_color_green)),
-    LINE(50, SEG("> ", eadk_color_white),   SEG("Press EXE to switch to slot A", eadk_color_yellow)),
+    LINE(50, SEG("> ", eadk_color_white),   SEG("Press EXE to jump to slot A", eadk_color_yellow)),
     
     LINE(50, SEG("> ", eadk_color_white),   SEG("It will erase all of your data", eadk_color_red)),
     LINE(50, SEG("> ", eadk_color_white),   SEG("Waiting...", eadk_color_white)),
     LINE(50, SEG("$ ", eadk_color_white),   SEG("EXE pressed", eadk_color_yellow)),
     
-    LINE(1500, SEG("> ", eadk_color_white),   SEG("Switching to slot B...", eadk_color_green)),
+    LINE(1500, SEG("> ", eadk_color_white),   SEG("Jumping to slot B...", eadk_color_green)),
     
-    LINE(1500, SEG("> ", eadk_color_white),   SEG("Switching to slot A...", eadk_color_green)),
+    LINE(1500, SEG("> ", eadk_color_white),   SEG("Jumping to slot A...", eadk_color_green)),
+
+    LINE(50, SEG("> ", eadk_color_white),   SEG("Press 1 for 0x90410030, 2 for 0x90420030", eadk_color_yellow)),
+    LINE(50, SEG("$ ", eadk_color_white),   SEG("Address 0x90410030 selected", eadk_color_green)),
+    LINE(50, SEG("$ ", eadk_color_white),   SEG("Address 0x90420030 selected", eadk_color_green)),
 };
 
 void display_line(eadk_point_t point, const line_buffer_t *line) {

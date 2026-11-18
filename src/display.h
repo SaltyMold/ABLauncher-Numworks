@@ -4,7 +4,7 @@
 #include "libs/eadk.h"
 
 #define SCREEN_NB_LINES 17
-#define NB_MESSAGES 22 
+#define NB_MESSAGES 25 
 
 #define MAX_SEGMENTS 8
 
